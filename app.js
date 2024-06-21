@@ -29,13 +29,6 @@ app.use(errorHandler);
 app.use(methodNotAllowed);
 app.use(notFound);
 
-// app.use((req, res) => {
-//   res.send(`Route Not Found`);
-// });
-
-// 4nrQVSRlh7T8LANR
-
-// mongodb+srv://ibitayoakinnibosun:4nrQVSRlh7T8LANR@cluster0.kftqa6s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 
 const start = async () => {
   try {
