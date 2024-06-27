@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { sendMail } = require("../utils/sendMail");
 const { token } = require("morgan");
 const crypto = require("crypto");
+const dotenv = require("dotenv");
 
 const registerUser = async (req, res, next) => {
   const { name, username, email, phone, password } = req.body;
@@ -22,9 +23,7 @@ const registerUser = async (req, res, next) => {
   if (!password) {
     return res.status(400).json({ message: "please provide a password" });
   }
-  if (!name || !username || !email || !phone || !password) {
-    return res.status(400).json({ message: "please provide all fields" });
-  }
+
   const salt = await bcryptjs.genSalt(10);
   const hashedPassword = await bcryptjs.hash(req.body.password, salt);
   try {
@@ -33,21 +32,7 @@ const registerUser = async (req, res, next) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "2d",
     });
-    // sendMail(
-    //   email,
-    //   "Welcome to TEDIBLE",
-    // `Hi ${name}, Your registration is successful!. Thank you for choosing us, we wish you will enjoy our services`
-    // );
-    // res.status(200).json({
-    //   message: "Registration successful!",
-    //   user: {
-    //     name: user.name,
-    //     username: user.username,
-    //     email: user.email,
-    //     phone: user.phone,
-    //   },
-    //   token,
-    // });
+
     const options = {
       email: email,
       subject: "Welcome to TEDIBLE",
@@ -146,16 +131,16 @@ const forgotPassword = async (req, res, next) => {
 };
 
 const resetPassword = async (req, res, next) => {
-  // const { token } = req.params;
+  const { token } = req.params;
   const { password } = req.body;
 
   try {
-    // if (!token) {
-    //   return res.status(400).json({ message: 'Token is required' });
-    // }
+    if (!token) {
+      return res.status(400).json({ message: "Token is required" });
+    }
 
     if (!password) {
-      return res.status(400).json({ message: 'Password is required' });
+      return res.status(400).json({ message: "Password is required" });
     }
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     const user = await User.findOne({

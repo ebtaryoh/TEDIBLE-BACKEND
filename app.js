@@ -7,28 +7,31 @@ require("dotenv").config();
 
 const foodRouter = require("./routes/foodRouter");
 const authRouter = require("./routes/authRouter");
-const categoryRouter = require("./routes/categoryRouter");
 const restaurantRouter = require("./routes/restaurantRouter");
 const orderRouter = require("./routes/orderRouter");
 const subRouter = require("./routes/subRouter");
+const ratingRouter = require("./routes/ratingRouter");
+const contactUsRouter = require("./routes/contactUsRouter");
+const paymentRouter = require("./routes/paymentRouter");
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
 const methodNotAllowed = require("./utils/methodNotAllowed");
-const PORT = 3000
+const PORT = 3000;
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/food", foodRouter);
-app.use("/api/category", categoryRouter);
 app.use("/api/restaurant", restaurantRouter);
 app.use("/api/order", orderRouter);
 app.use("api/subscribe", subRouter);
+app.use("/api/rating", ratingRouter);
+app.use("/api/contact-us", contactUsRouter);
+app.use("/api/initialize-payment", paymentRouter);
 app.use(errorHandler);
 app.use(methodNotAllowed);
 app.use(notFound);
-
 
 const start = async () => {
   try {

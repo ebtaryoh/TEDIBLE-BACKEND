@@ -1,9 +1,0 @@
-const express = require("express");
-const { subscribe, unsubscribe } = require("../controllers/subController");
-const methodNotAllowed = require("../utils/methodNotAllowed.js");
-
-const router = express.Router();
-
-router.route("/").post(subscribe, unsubscribe).all(methodNotAllowed);
-
-module.exports = router;

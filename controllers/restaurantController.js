@@ -66,16 +66,20 @@ const singleRestaurant = async (req, res) => {
 };
 const updateRestaurant = async (req, res) => {};
 const deleteRestaurant = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const restaurant = await Restaurant.findOneAndDelete({ _id: id });
+  try {
+    const { id } = req.params;
+    const restaurant = await Restaurant.findOneAndDelete({ _id: id });
     if (!restaurant) {
-      return res.status(404).json({ message: "No restaurant found with this ID" });
+      return res
+        .status(404)
+        .json({ message: "No restaurant found with this ID" });
     }
-    res.status(200).json({message:'Restaurant deleted successfully'})
-    } catch (error) {
-        res.status(500).json({message:'Error in deleting Restaurant API', error})
-    }
+    res.status(200).json({ message: "Restaurant deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error in deleting Restaurant API", error });
+  }
 };
 
 module.exports = {

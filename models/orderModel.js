@@ -8,13 +8,8 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: [
-        "preparing",
-        "Available and ready for delivery",
-        "on the way",
-        "delivered",
-      ],
-      default: "Available and ready for delivery",
+      enum: ["pending", "completed"],
+      default: "pending",
     },
     qty: { type: Number, required: true, default: 1 },
     amount: {

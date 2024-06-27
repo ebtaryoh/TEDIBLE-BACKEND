@@ -13,8 +13,6 @@ const foodSchema = new mongoose.Schema(
     imageUrl: { type: String, required: [true, "please provide an image Url"] },
     foodTags: { type: String },
     isAvailable: { type: Boolean, default: true },
-    rating: { type: Number, default: 5, min: 1, max: 5 },
-    ratingCount: { type: String },
 
     restaurant: {
       type: mongoose.Types.ObjectId,

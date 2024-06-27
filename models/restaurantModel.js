@@ -10,8 +10,6 @@ const restaurantSchema = new mongoose.Schema(
     delivery: { type: Boolean, default: true },
     isOpen: { type: Boolean, default: true },
     logoUrl: { type: String },
-    rating: { type: Number, default: 1, min: 1, max: 5 },
-    ratingCount:{type:String}
   },
 
   { timestamps: true }

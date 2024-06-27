@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const crypto = require("crypto");
+const { match } = require("assert");
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,6 +22,7 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       required: [(true, "Please provide a phone number")],
+      match: [/^(\+234|0)(70|80|81|90)\d{8}$/, "Invalid phone number"],
     },
     password: { type: String, required: [true, "Please provide a password"] },
   },
@@ -28,8 +30,11 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.methods.generatePasswordResetToken = async () => {
-  const resetToken = crypto.randomBytes(20).toString('hex');
-  this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  const resetToken = crypto.randomBytes(20).toString("hex");
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
   this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
