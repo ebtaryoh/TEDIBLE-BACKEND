@@ -12,6 +12,8 @@ const orderRouter = require("./routes/orderRouter");
 const ratingRouter = require("./routes/ratingRouter");
 const contactUsRouter = require("./routes/contactUsRouter");
 const paymentRouter = require("./routes/paymentRouter");
+const vendorRouter = require("./routes/vendorRouter");
+
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
 const methodNotAllowed = require("./utils/methodNotAllowed");
@@ -27,6 +29,7 @@ app.use("/api/order", orderRouter);
 app.use("/api/rating", ratingRouter);
 app.use("/api/contact-us", contactUsRouter);
 app.use("/api/initialize-payment", paymentRouter);
+app.use("/api/vendor", vendorRouter);
 app.use(errorHandler);
 app.use(methodNotAllowed);
 app.use(notFound);

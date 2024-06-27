@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcryptjs = require("bcryptjs");
 
 const vendorSchema = new mongoose.Schema(
   {
@@ -23,36 +24,11 @@ const vendorSchema = new mongoose.Schema(
       required: [true, "Please provide an email"],
       unique: true,
     },
-    deliveryOption: { enum: ["In house delivery", "pickup"] },
-    // operatingHours: [
-    //   {
-    //     day: {
-    //       type: String,
-    //       enum: [
-    //         "Monday",
-    //         "Tuesday",
-    //         "Wednesday",
-    //         "Thursday",
-    //         "Friday",
-    //         "Saturday",
-    //         "Sunday",
-    //       ],
-    //       required: true,
-    //     },
-    //     open: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //     close: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //   },
-    // ],
-    // cuisineType: {
-    //   type: String,
-    //   required: [true, "Please provide a cuisine type"],
-    // },
+    deliveryOption: {
+      pickup: { type: Boolean, default: false },
+      inHouseDelivery: { type: Boolean, default: false },
+    },
+
     fullName: {
       type: String,
       required: [true, "Please provide your full name"],
@@ -76,11 +52,11 @@ vendorSchema.pre("save", function (next) {
 
   if (!vendor.isModified("password")) return next();
 
-  bcrypt.hash(vendor.password, 10, (error, hash) => {
+  bcryptjs.hash(vendor.password, 10, (error, hash) => {
     if (error) return next(error);
 
     vendor.password = hash;
-    vendor.confirmPassword = hash; 
+    vendor.confirmPassword = hash;
     next();
   });
 });
@@ -93,7 +69,7 @@ vendorSchema.pre("validate", function (next) {
 });
 
 vendorSchema.methods.comparePassword = function (candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, (error, isMatch) => {
+  bcryptjs.compare(candidatePassword, this.password, (error, isMatch) => {
     if (error) return cb(error);
     cb(null, isMatch);
   });

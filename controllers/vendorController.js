@@ -1,5 +1,4 @@
 const Vendor = require("../models/vendorModel");
-const bcryptjs = reqiure("bcryptjs");
 
 const getAllVendors = async (req, res) => {
   try {
@@ -48,9 +47,9 @@ const updateVendor = async (req, res) => {
       return res.status(404).json({ message: "Vendor not found" });
     }
 
-    vendor.name = req.body.name || vendor.name;
-    vendor.address = req.body.address || vendor.address;
-    vendor.contactNumber = req.body.contactNumber || vendor.contactNumber;
+    vendor.businessName = req.body.businessName || vendor.businessName;
+    vendor.businessAddress = req.body.address || vendor.businessAddress;
+    vendor.phoneNumber = req.body.contactNumber || vendor.phoneNumber;
     vendor.email = req.body.email || vendor.email;
 
     const updatedVendor = await vendor.save();
