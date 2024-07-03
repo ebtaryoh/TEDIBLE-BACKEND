@@ -40,6 +40,18 @@ const registerUser = async (req, res, next) => {
     };
 
     await sendMail(options);
+
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        phone: user.phone,
+      },
+    });
   } catch (error) {
     next(error);
   }
