@@ -1,82 +1,116 @@
 const Vendor = require("../models/vendorModel");
 
-const getAllVendors = async (req, res) => {
+const bcryptjs = require("bcryptjs");
+
+const signupVendor = async (req, res) => {
   try {
-    const vendors = await Vendor.find();
-    res.json(vendors);
+    const {
+      businessName,
+      businessAddress,
+      phoneNumber,
+      email,
+      deliveryOptions,
+      fullName,
+      status,
+      password,
+      confirmPassword,
+    } = req.body;
+
+    const vendor = new Vendor({
+      businessName,
+      businessAddress,
+      phoneNumber,
+      email,
+      deliveryOptions,
+      fullName,
+      status,
+      password,
+      confirmPassword,
+    });
+
+    await vendor.save();
+    res.status(201).json({ message: "Vendor registered successfully", vendor });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
 
-const getVendorById = async (req, res) => {
+const loginVendor = async (req, res, next) => {
+  //   try {
+  //     const { email, password } = req.body;
+  //     const vendor = await Vendor.findOne({ email });
+
+  //     if (!vendor) {
+  //       return res.status(400).json({ message: "Invalid email or password" });
+  //     }
+
+  //     const isMatch = await vendor.comparePassword(password);
+  //     if (!isMatch) {
+  //       return res.status(400).json({ message: "Invalid email or password" });
+  //     }
+
+  //     res.json({ message: "Login successful", vendor });
+  //   } catch (error) {
+  //     res.status(400).json({ error: error.message });
+  //   }
+  // };
+
   try {
-    const vendor = await Vendor.findById(req.params.id);
-    if (!vendor) {
-      return res.status(404).json({ message: "Vendor not found" });
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(401).json({ message: `Invalid email or password` });
     }
-    res.json(vendor);
+    const vendor = await Vendor.findOne({ email });
+    if (!vendor) {
+      return res.status(401).json({ message: `Username is not registered` });
+    }
+    const isPasswordMatch = await bcryptjs.compare(password, vendor.password);
+    if (!isPasswordMatch) {
+      return res.status(401).json({ message: "Incorrect Password" });
+    }
+
+    res.status(200).json({
+      message: "Login successful!",
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    message: `Error in login`, next(error);
   }
 };
-
-const createVendor = async (req, res) => {
-  const vendor = new Vendor({
-    businessName: req.body.businessName,
-    businessAddress: req.body.businessAddress,
-    phoneNumber: req.body.phoneNumber,
-    email: req.body.email,
-    deliveryOption: req.body.deliveryOption,
-    fullName: req.body.fullName,
-    createPassword: req.body.createPassword,
-    confirmPassword: req.body.confirmPassword,
-  });
-  try {
-    const newVendor = await vendor.save();
-    res.status(201).json(newVendor);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
 const updateVendor = async (req, res) => {
   try {
-    const vendor = await Vendor.findById(req.params.id);
+    const { id } = req.params;
+    const updates = req.body;
+    if (updates.password) {
+      updates.password = await bcryptjs.hash(updates.password, 10);
+    }
+    const vendor = await Vendor.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    });
+
     if (!vendor) {
       return res.status(404).json({ message: "Vendor not found" });
     }
 
-    vendor.businessName = req.body.businessName || vendor.businessName;
-    vendor.businessAddress = req.body.address || vendor.businessAddress;
-    vendor.phoneNumber = req.body.contactNumber || vendor.phoneNumber;
-    vendor.email = req.body.email || vendor.email;
-
-    const updatedVendor = await vendor.save();
-    res.json(updatedVendor);
+    res.json({ message: "Vendor updated successfully", vendor });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
 
 const deleteVendor = async (req, res) => {
   try {
-    const vendor = await Vendor.findById(req.params.id);
+    const { id } = req.params;
+    const vendor = await Vendor.findByIdAndDelete(id);
+
     if (!vendor) {
       return res.status(404).json({ message: "Vendor not found" });
     }
 
-    await vendor.remove();
-    res.json({ message: "Vendor deleted" });
+    res.json({ message: "Vendor deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
 
-module.exports = {
-  getAllVendors,
-  getVendorById,
-  createVendor,
-  updateVendor,
-  deleteVendor,
-};
+module.exports = { signupVendor, loginVendor, deleteVendor, updateVendor };

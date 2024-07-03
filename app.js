@@ -7,12 +7,12 @@ require("dotenv").config();
 
 const foodRouter = require("./routes/foodRouter");
 const authRouter = require("./routes/authRouter");
-const restaurantRouter = require("./routes/restaurantRouter");
 const orderRouter = require("./routes/orderRouter");
 const ratingRouter = require("./routes/ratingRouter");
 const contactUsRouter = require("./routes/contactUsRouter");
 const paymentRouter = require("./routes/paymentRouter");
 const vendorRouter = require("./routes/vendorRouter");
+const productRouter = require("./routes/productRouter");
 
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
@@ -24,12 +24,12 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/food", foodRouter);
-app.use("/api/restaurant", restaurantRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/rating", ratingRouter);
 app.use("/api/contact-us", contactUsRouter);
 app.use("/api/initialize-payment", paymentRouter);
 app.use("/api/vendor", vendorRouter);
+app.use("/api/product", productRouter);
 app.use(errorHandler);
 app.use(methodNotAllowed);
 app.use(notFound);

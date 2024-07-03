@@ -1,18 +1,18 @@
 const express = require("express");
 const {
-  createVendor,
-  getAllVendors,
-  getVendorById,
   updateVendor,
   deleteVendor,
+  signupVendor,
+  loginVendor,
 } = require("../controllers/vendorController");
 const methodNotAllowed = require("../utils/methodNotAllowed");
 const router = express.Router();
 
-router.route("/").get(getAllVendors).post(createVendor).all(methodNotAllowed);
+router.route("/register").post(signupVendor).all(methodNotAllowed);
+router.route("/login").post(loginVendor).all(methodNotAllowed);
+
 router
   .route("/:id")
-  .get(getVendorById)
   .patch(updateVendor)
   .delete(deleteVendor)
   .all(methodNotAllowed);

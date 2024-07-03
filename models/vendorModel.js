@@ -5,47 +5,60 @@ const vendorSchema = new mongoose.Schema(
   {
     businessName: {
       type: String,
-      required: [true, "Please provide a business name"],
+      required: true,
     },
-    // nameOfContactPerson: {
-    //   type: String,
-    //   required: [true, "Please provide a contact person name"],
-    // },
     businessAddress: {
       type: String,
-      required: [true, "Please provide a business address"],
+      required: true,
     },
     phoneNumber: {
-      type: Number,
-      required: [true, "Please provide a phone number"],
+      type: String,
+      required: true,
     },
     email: {
       type: String,
-      required: [true, "Please provide an email"],
+      required: true,
       unique: true,
     },
-    deliveryOption: {
-      pickup: { type: Boolean, default: false },
-      inHouseDelivery: { type: Boolean, default: false },
+    deliveryOptions: {
+      pickup: {
+        type: Boolean,
+        default: true,
+      },
+      delivery: {
+        type: Boolean,
+        default: true,
+      },
     },
-
     fullName: {
       type: String,
-      required: [true, "Please provide your full name"],
-      unique: true,
+      required: true,
     },
-    createPassword: {
+    status: {
       type: String,
-      required: [true, "Please provide a password"],
+      enum: ["Active", "Inactive", "Pending"],
+      default: "Pending",
+    },
+    password: {
+      type: String,
+      required: true,
     },
     confirmPassword: {
       type: String,
-      required: [true, "Please provide a password"],
+      required: true,
     },
   },
-
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
+
+vendorSchema.pre("validate", function (next) {
+  if (this.password !== this.confirmPassword) {
+    this.invalidate("confirmPassword", "Passwords do not match");
+  }
+  next();
+});
 
 vendorSchema.pre("save", function (next) {
   const vendor = this;
@@ -61,18 +74,15 @@ vendorSchema.pre("save", function (next) {
   });
 });
 
-vendorSchema.pre("validate", function (next) {
-  if (this.password !== this.confirmPassword) {
-    this.invalidate("confirmPassword", "Passwords do not match");
-  }
-  next();
-});
-
-vendorSchema.methods.comparePassword = function (candidatePassword, cb) {
-  bcryptjs.compare(candidatePassword, this.password, (error, isMatch) => {
-    if (error) return cb(error);
-    cb(null, isMatch);
-  });
+vendorSchema.methods.comparePassword = async function (candidatePassword, cb) {
+  return await bcryptjs.compare(
+    candidatePassword,
+    this.password,
+    (error, isMatch) => {
+      if (error) return cb(error);
+      cb(null, isMatch);
+    }
+  );
 };
 
 module.exports = mongoose.model("Vendor", vendorSchema);
