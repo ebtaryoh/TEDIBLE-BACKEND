@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
-const foodRouter = require("./routes/foodRouter");
 const authRouter = require("./routes/authRouter");
 const orderRouter = require("./routes/orderRouter");
 const ratingRouter = require("./routes/ratingRouter");
@@ -23,7 +22,6 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
-app.use("/api/food", foodRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/rating", ratingRouter);
 app.use("/api/contact-us", contactUsRouter);

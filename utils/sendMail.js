@@ -1,5 +1,4 @@
 const nodemailer = require("nodemailer");
-const { options } = require("../routes/foodRouter");
 require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
