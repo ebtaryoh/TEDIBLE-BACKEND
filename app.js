@@ -16,7 +16,7 @@ const productRouter = require("./routes/productRouter");
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
 const methodNotAllowed = require("./utils/methodNotAllowed");
-const PORT = 3000;
+const PORT = 4000;
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());

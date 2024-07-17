@@ -11,7 +11,7 @@ const auth = require("../middlewares/auth");
 const router = express.Router();
 
 // router.route("/").get(auth, getUser).all(methodNotAllowed);
-router.route("/").delete(auth, deleteUser).all(methodNotAllowed);
+router.route("/delete/:userId").delete(auth, deleteUser).all(methodNotAllowed);
 router.route("/register").post(registerUser).all(methodNotAllowed);
 router.route("/login").post(loginUser).all(methodNotAllowed);
 router.route("/reset-password/:id").post(resetPassword).all(methodNotAllowed);
