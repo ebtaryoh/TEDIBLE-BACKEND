@@ -20,6 +20,7 @@ const vendorSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    
     deliveryOptions: {
       pickup: {
         type: Boolean,

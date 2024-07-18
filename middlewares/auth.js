@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
 const auth = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -16,4 +17,12 @@ const auth = (req, res, next) => {
   }
 };
 
-module.exports = auth;
+const isVendor = (req, res, next) => {
+  const user = User.findById(req.user.userId);
+  if (!user || user?.role !== "vendor") {
+    return res.status(401).json({ message: "Vendors only" });
+  }
+  next();
+};
+
+module.exports = {auth, isVendor};

@@ -7,11 +7,12 @@ const {
   updateProduct,
   deleteProduct,
 } = require("../controllers/productController");
+const { auth, isVendor } = require("../middlewares/auth");
 
 router
   .route("/")
   .get(getProducts)
-  .post(upload.single("itemImage"), createProduct);
+  .post(upload.single("itemImage"), auth, isVendor, createProduct);
 
 router
   .route("/:id")

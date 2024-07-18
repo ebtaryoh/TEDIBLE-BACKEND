@@ -7,7 +7,7 @@ const {
   forgotPassword,
 } = require("../controllers/authController");
 const methodNotAllowed = require("../utils/methodNotAllowed");
-const auth = require("../middlewares/auth");
+const { auth } = require("../middlewares/auth");
 const router = express.Router();
 
 // router.route("/").get(auth, getUser).all(methodNotAllowed);

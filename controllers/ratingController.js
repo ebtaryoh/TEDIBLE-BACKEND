@@ -1,28 +1,35 @@
-const Rating = require("../models/ratingModel");
+const Product = require("../models/productModel");
 
 const submitRating = async (req, res) => {
   try {
-    const { itemId, userId, rating } = req.body;
+    const { productId, rating } = req.body;
 
-    if (!itemId || !userId || !rating) {
+    if (!productId || !rating) {
       return res.status(400).json({ message: "Invalid input" });
     }
 
-    const existingRating = await Rating.findOne({ itemId });
-    if (existingRating) {
-      return res.status(400).json({ error: "itemId already exists" });
+    const existingProduct = await Product.findOne({ _id: productId });
+    if (!existingProduct) {
+      return res.status(400).json({ error: "product doesn't exist" });
     }
-
-    let userRating = await Rating.findOne({ itemId, userId });
-    if (userRating) {
-      userRating.rating = rating;
-      await userRating.save();
+    if (existingProduct.totalRatings) {
+      const newTotalRating = existingProduct.totalRatings + rating;
+      const newRating = newTotalRating / existingProduct.numberOfRatings + 1;
+      existingProduct.rating = newRating;
+      existingProduct.numberOfRatings++;
+      await existingProduct.save();
     } else {
-      userRating = new Rating({ itemId, userId, rating });
-      await userRating.save();
+      const newTotalRating = 0 + rating;
+      const newRating = newTotalRating / existingProduct.numberOfRatings + 1;
+      existingProduct.rating = newRating;
+      existingProduct.numberOfRatings++;
+      await existingProduct.save();
     }
 
-    res.status(200).json({ message: "Rating submitted" });
+    res.status(200).json({
+      message: "Rating submitted",
+      data: { product: existingProduct },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

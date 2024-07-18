@@ -19,11 +19,23 @@ const productSchema = new mongoose.Schema(
     priceCurrency: { type: String, default: "NGN" },
     tags: { type: [String], required: true },
 
-   
     vendor: {
       type: mongoose.Types.ObjectId,
       ref: "Vendor",
       required: [true, "Vendor ID is required"],
+    },
+    
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    numberOfRatings: {
+      type: Number,
+      default: 0,
+    },
+    totalRatings: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }
