@@ -8,15 +8,17 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 const { auth, isVendor } = require("../middlewares/auth");
+const methodNotAllowed = require("../utils/methodNotAllowed");
 
 router
   .route("/")
   .get(getProducts)
-  .post(upload.single("itemImage"), auth, isVendor, createProduct);
+  .post(upload.single("itemImage"), auth, isVendor, createProduct).all(methodNotAllowed)
 
 router
   .route("/:id")
   .put(upload.single("itemImage"), updateProduct)
-  .delete(deleteProduct);
+  .delete(deleteProduct)
+  .all(methodNotAllowed);
 
 module.exports = router;

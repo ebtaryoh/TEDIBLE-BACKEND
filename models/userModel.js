@@ -10,9 +10,7 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please provide an email address"],
       match: [/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "Invalid email address"],
     },
-    role: { type: String, enum: ["user", "vendor"], 
-      default: "user" 
-    },
+    role: { type: String, enum: ["user", "vendor"], default: "user" },
     phone: {
       type: String,
       required: [true, "Please provide a phone number"],
@@ -21,6 +19,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: [true, "Please provide a password"] },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    avatar: { type: String }, 
   },
   { timestamps: true }
 );
@@ -30,6 +29,10 @@ userSchema.methods.generatePasswordResetToken = function() {
   this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
   this.resetPasswordExpires = Date.now() + 3600000;
   return resetToken;
+};
+
+userSchema.statics.updateAvatar = async function(userId, avatarUrl) {
+  await this.findByIdAndUpdate(userId, { avatar: avatarUrl });
 };
 
 module.exports = mongoose.model("User", userSchema);

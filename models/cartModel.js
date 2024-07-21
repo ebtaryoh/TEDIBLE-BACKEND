@@ -15,7 +15,7 @@ const cartSchema = new mongoose.Schema(
         priceCurrency: { type: String, default: "NGN" },
       },
     ],
-    totalAmount: { type: Number, default: 0 },
+    totalAmount: { type: Number, required:true, default: 0 },
   },
   { timestamps: true }
 );
