@@ -12,7 +12,6 @@ const ratingRouter = require("./routes/ratingRouter");
 const contactUsRouter = require("./routes/contactUsRouter");
 const vendorRouter = require("./routes/vendorRouter");
 const productRouter = require("./routes/productRouter");
-const profileRouter = require('./routes/profileRouter')
 
 
 const notFound = require("./middlewares/notFound");
@@ -30,7 +29,6 @@ app.use("/api/rating", ratingRouter);
 app.use("/api/contact-us", contactUsRouter);
 app.use("/api/vendor", vendorRouter);
 app.use("/api/product", productRouter);
-app.use('/api/profile', profileRouter);
 
 app.use(errorHandler);
 app.use(methodNotAllowed);

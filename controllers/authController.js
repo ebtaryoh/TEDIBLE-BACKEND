@@ -7,6 +7,7 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+// User registration
 const registerUser = async (req, res, next) => {
   const { name, username, email, phone, password } = req.body;
   if (!name || !username || !email || !phone || !password) {
@@ -46,6 +47,7 @@ const registerUser = async (req, res, next) => {
   }
 };
 
+// User login
 const loginUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -83,6 +85,7 @@ const loginUser = async (req, res, next) => {
   }
 };
 
+// User deletion
 const deleteUser = async (req, res, next) => {
   const { userId } = req.params;
   try {
@@ -96,6 +99,7 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+// Forgot password
 const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
 
@@ -113,7 +117,7 @@ const forgotPassword = async (req, res, next) => {
     const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = Date.now() + 3600000; 
+    user.resetPasswordExpires = Date.now() + 3600000;
     await user.save();
 
     const resetUrl = `${process.env.CLIENT_BASE_URL}/reset-password/${resetToken}`;
@@ -131,6 +135,7 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
+// Reset password
 const resetPassword = async (req, res, next) => {
   const { token } = req.params;
   const { password } = req.body;
@@ -166,10 +171,87 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+// Upload avatar
+const uploadAvatar = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+
+    if (!req.file) {
+      return res.status(400).json({ error: "Please upload an image file." });
+    }
+
+    const avatarUrl = req.file.path; // Cloudinary URL
+
+    // Update the user's avatar in the database
+    await User.updateAvatar(userId, avatarUrl);
+
+    res.json({ message: "Avatar uploaded successfully!", avatarUrl });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get avatar
+const getAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json({ avatarUrl: user.avatar });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update avatar
+const updateAvatar = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+
+    if (!req.file) {
+      return res.status(400).json({ error: "Please upload an image file." });
+    }
+
+    const avatarUrl = req.file.path; // Cloudinary URL
+
+    // Update the user's avatar in the database
+    await User.updateAvatar(userId, avatarUrl);
+
+    res.json({ message: "Avatar updated successfully!", avatarUrl });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Delete avatar
+const deleteAvatar = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Remove avatar URL from the user's profile
+    user.avatar = undefined;
+    await user.save();
+
+    res.json({ message: "Avatar deleted successfully!" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   deleteUser,
   forgotPassword,
   resetPassword,
+  uploadAvatar,
+  getAvatar,
+  updateAvatar,
+  deleteAvatar,
 };
