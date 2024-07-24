@@ -1,9 +1,11 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
-const auth = (req, res, next) => {
+
+const auth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith(`Bearer `)) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    console.log("Authorization header missing or malformed");
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -11,18 +13,20 @@ const auth = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = { userId: decoded.userId };
+
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      console.log("User not found");
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    req.user.role = user.role;
+    console.log("User authorized with role:", user.role);
     next();
   } catch (error) {
+    console.log("Token verification failed:", error.message);
     res.status(401).json({ message: "Invalid Token" });
   }
 };
 
-const isVendor = (req, res, next) => {
-  const user = User.findById(req.user.userId);
-  if (!user || user?.role !== "vendor") {
-    return res.status(401).json({ message: "Vendors only" });
-  }
-  next();
-};
-
-module.exports = {auth, isVendor};
+module.exports = { auth };

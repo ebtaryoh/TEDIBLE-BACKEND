@@ -12,17 +12,25 @@ const createProduct = async (req, res) => {
       tags,
       vendor,
     } = req.body;
+
+    // Ensure req.file exists to avoid errors
+    if (!req.file) {
+      return res.status(400).json({ error: "Product image is required" });
+    }
+
     const itemImage = req.file.path;
+
+    // Check required fields
     if (!itemName || !price || !category || !subCategory || !vendor) {
       return res.status(400).json({ error: "Required fields are missing" });
     }
-    if(req.user.role !== "vendor")
+
+    // Check user role
+    if (req.user.role !== "vendor") {
       return res.status(401).json({
-    message:`User ${req.user.id} is not authorized to create product`
-
-    })
-
- 
+        message: `User ${req.user.id} is not authorized to create product`,
+      });
+    }
 
     const product = new Product({
       itemName,
@@ -31,8 +39,8 @@ const createProduct = async (req, res) => {
       promotionalOffer,
       category,
       subCategory,
-      tags: tags.split(","),
-      vendor,
+      tags: tags.split(","), // Ensure tags is an array
+      vendor: req.user.userId,
     });
 
     await product.save();
@@ -71,6 +79,7 @@ const updateProduct = async (req, res) => {
       tags,
       vendor,
     } = req.body;
+
     let itemImage;
 
     if (req.file) {
@@ -110,9 +119,10 @@ const deleteProduct = async (req, res) => {
     if (product) {
       await cloudinary.uploader.destroy(product.itemImage);
       await product.remove();
+      res.status(200).json({ message: "Product deleted successfully" });
+    } else {
+      res.status(404).json({ message: "Product not found" });
     }
-
-    res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

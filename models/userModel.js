@@ -4,13 +4,22 @@ const crypto = require("crypto");
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: [true, "Please provide your full name"] },
-    username: { type: String, required: [true, "Please provide a username"], unique: true },
+    username: {
+      type: String,
+      required: [true, "Please provide a username"],
+      unique: true,
+    },
     email: {
       type: String,
       required: [true, "Please provide an email address"],
       match: [/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "Invalid email address"],
     },
-    role: { type: String, enum: ["user", "vendor"], default: "user" },
+    role: {
+      type: String,
+      enum: ["user", "vendor"],
+      required: true,
+      default: "user",
+    },
     phone: {
       type: String,
       required: [true, "Please provide a phone number"],
@@ -19,19 +28,26 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: [true, "Please provide a password"] },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
-    avatar: { type: String }, 
+    avatar: {
+      type: String,
+      default:
+        "https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&q=70&fm=webp",
+    },
   },
   { timestamps: true }
 );
 
-userSchema.methods.generatePasswordResetToken = function() {
+userSchema.methods.generatePasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
-  this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
   this.resetPasswordExpires = Date.now() + 3600000;
   return resetToken;
 };
 
-userSchema.statics.updateAvatar = async function(userId, avatarUrl) {
+userSchema.statics.updateAvatar = async function (userId, avatarUrl) {
   await this.findByIdAndUpdate(userId, { avatar: avatarUrl });
 };
 

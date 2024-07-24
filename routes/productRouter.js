@@ -7,13 +7,14 @@ const {
   updateProduct,
   deleteProduct,
 } = require("../controllers/productController");
-const { auth, isVendor } = require("../middlewares/auth");
+const { auth } = require("../middlewares/auth");
 const methodNotAllowed = require("../utils/methodNotAllowed");
 
 router
   .route("/")
   .get(getProducts)
-  .post(upload.single("itemImage"), auth, isVendor, createProduct).all(methodNotAllowed)
+  .post(upload.single("itemImage"), auth, createProduct)
+  .all(methodNotAllowed);
 
 router
   .route("/:id")

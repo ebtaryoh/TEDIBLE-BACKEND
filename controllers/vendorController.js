@@ -1,7 +1,8 @@
 const Vendor = require("../models/vendorModel");
-
 const bcryptjs = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
+// Signup vendor
 const signupVendor = async (req, res) => {
   try {
     const {
@@ -35,47 +36,46 @@ const signupVendor = async (req, res) => {
   }
 };
 
+// Login vendor
 const loginVendor = async (req, res, next) => {
-  //   try {
-  //     const { email, password } = req.body;
-  //     const vendor = await Vendor.findOne({ email });
-
-  //     if (!vendor) {
-  //       return res.status(400).json({ message: "Invalid email or password" });
-  //     }
-
-  //     const isMatch = await vendor.comparePassword(password);
-  //     if (!isMatch) {
-  //       return res.status(400).json({ message: "Invalid email or password" });
-  //     }
-
-  //     res.json({ message: "Login successful", vendor });
-  //   } catch (error) {
-  //     res.status(400).json({ error: error.message });
-  //   }
-  // };
-
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(401).json({ message: `Invalid email or password` });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
     const vendor = await Vendor.findOne({ email });
     if (!vendor) {
-      return res.status(401).json({ message: `Username is not registered` });
+      return res.status(401).json({ message: "Vendor is not registered" });
     }
     const isPasswordMatch = await bcryptjs.compare(password, vendor.password);
     if (!isPasswordMatch) {
-      return res.status(401).json({ message: "Incorrect Password" });
+      return res.status(401).json({ message: "Incorrect password" });
     }
 
-    res.status(200).json({
-      message: "Login successful!",
+    const token = jwt.sign({ userId: vendor._id }, process.env.JWT_SECRET, {
+      expiresIn: "2d",
     });
+    res.status(200).json({ message: "Login successful!", token });
   } catch (error) {
-    message: `Error in login`, next(error);
+    next(error);
   }
 };
+
+// Get vendor by ID
+const getVendor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const vendor = await Vendor.findById(id);
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+    res.json(vendor);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Update vendor
 const updateVendor = async (req, res) => {
   try {
     const { id } = req.params;
@@ -98,6 +98,7 @@ const updateVendor = async (req, res) => {
   }
 };
 
+// Delete vendor
 const deleteVendor = async (req, res) => {
   try {
     const { id } = req.params;
@@ -113,4 +114,10 @@ const deleteVendor = async (req, res) => {
   }
 };
 
-module.exports = { signupVendor, loginVendor, deleteVendor, updateVendor };
+module.exports = {
+  signupVendor,
+  loginVendor,
+  getVendor,
+  deleteVendor,
+  updateVendor,
+};
