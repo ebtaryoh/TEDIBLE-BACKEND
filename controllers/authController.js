@@ -8,9 +8,13 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const registerUser = async (req, res, next) => {
-  const { name, username, email, phone, password } = req.body;
+  const { name, username, email, phone, password, role = "user" } = req.body;
   if (!name || !username || !email || !phone || !password) {
     return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!["user", "vendor"].includes(role)) {
+    return res.status(400).json({ message: "Invalid role value" });
   }
 
   const salt = await bcryptjs.genSalt(10);
@@ -43,6 +47,7 @@ const registerUser = async (req, res, next) => {
         email: user.email,
         username: user.username,
         phone: user.phone,
+        role: user.role,
       },
     });
   } catch (error) {
@@ -54,9 +59,7 @@ const loginUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
-      return res
-        .status(400)
-        .json({ message: "Username and password are required" });
+      return res.status(400).json({ message: "Username and password are required" });
     }
 
     const user = await User.findOne({ username });
@@ -69,9 +72,11 @@ const loginUser = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "2d",
-    });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "2d" }
+    );
 
     res.status(200).json({
       message: "Login successful!",
@@ -82,6 +87,7 @@ const loginUser = async (req, res, next) => {
         email: user.email,
         phone: user.phone,
         avatar: user.avatar,
+        role: user.role,
       },
       token,
     });
@@ -113,19 +119,14 @@ const forgotPassword = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(400)
-        .json({ message: "User with this email does not exist" });
+      return res.status(400).json({ message: "User with this email does not exist" });
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = Date.now() + 3600000;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
     const resetUrl = `${process.env.CLIENT_BASE_URL}/reset-password/${resetToken}`;
