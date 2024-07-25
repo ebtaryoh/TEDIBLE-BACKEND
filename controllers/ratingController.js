@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const Rating = require("../models/ratingModel");
 
 const submitRating = async (req, res) => {
   try {
@@ -8,23 +9,20 @@ const submitRating = async (req, res) => {
       return res.status(400).json({ message: "Invalid input" });
     }
 
-    const existingProduct = await Product.findOne({ _id: productId });
+    const existingProduct = await Product.findById(productId);
     if (!existingProduct) {
-      return res.status(400).json({ error: "product doesn't exist" });
+      return res.status(400).json({ error: "Product doesn't exist" });
     }
-    if (existingProduct.totalRatings) {
-      const newTotalRating = existingProduct.totalRatings + rating;
-      const newRating = newTotalRating / existingProduct.numberOfRatings + 1;
-      existingProduct.rating = newRating;
-      existingProduct.numberOfRatings++;
-      await existingProduct.save();
-    } else {
-      const newTotalRating = 0 + rating;
-      const newRating = newTotalRating / existingProduct.numberOfRatings + 1;
-      existingProduct.rating = newRating;
-      existingProduct.numberOfRatings++;
-      await existingProduct.save();
-    }
+
+    const newTotalRating = existingProduct.totalRatings + rating;
+    const newNumberOfRatings = existingProduct.numberOfRatings + 1;
+    const newRating = newTotalRating / newNumberOfRatings;
+
+    existingProduct.totalRatings = newTotalRating;
+    existingProduct.numberOfRatings = newNumberOfRatings;
+    existingProduct.rating = newRating;
+
+    await existingProduct.save();
 
     res.status(200).json({
       message: "Rating submitted",
@@ -45,8 +43,7 @@ const getRatings = async (req, res) => {
       return res.status(404).json({ message: "No ratings found" });
     }
 
-    const averageRating =
-      ratings.reduce((acc, r) => acc + r.rating, 0) / ratings.length;
+    const averageRating = ratings.reduce((acc, r) => acc + r.rating, 0) / ratings.length;
 
     res.status(200).json({ itemId, averageRating });
   } catch (error) {

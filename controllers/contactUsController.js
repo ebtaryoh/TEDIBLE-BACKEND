@@ -8,10 +8,17 @@ const contactUsLogic = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const contact = new ContactUs({ fullName, email, subject, message });
-
   try {
+    // Check for existing contact with the same email
+    const existingContact = await ContactUs.findOne({ email });
+    if (existingContact) {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+
+    const contact = new ContactUs({ fullName, email, subject, message });
+
     await contact.save();
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {

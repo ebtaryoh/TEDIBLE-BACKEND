@@ -12,7 +12,7 @@ const auth = async (req, res, next) => {
   const token = authHeader.split(" ")[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { userId: decoded.userId };
+    req.user = { userId: decoded.userId, role: decoded.role };
 
     const user = await User.findById(req.user.userId);
     if (!user) {
@@ -20,8 +20,8 @@ const auth = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    req.user.role = user.role;
-    console.log("User authorized with role:", user.role);
+    req.user.role = user.role || decoded.role;
+    console.log("User authorized with role:", req.user.role);
     next();
   } catch (error) {
     console.log("Token verification failed:", error.message);

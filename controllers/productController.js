@@ -28,7 +28,7 @@ const createProduct = async (req, res) => {
     // Check user role
     if (req.user.role !== "vendor") {
       return res.status(401).json({
-        message: `User ${req.user.id} is not authorized to create product`,
+        message: `User ${req.user.id} is not authorized to create products`,
       });
     }
 
@@ -39,7 +39,7 @@ const createProduct = async (req, res) => {
       promotionalOffer,
       category,
       subCategory,
-      tags: tags.split(","), // Ensure tags is an array
+      tags: tags.split(","), 
       vendor: req.user.userId,
     });
 

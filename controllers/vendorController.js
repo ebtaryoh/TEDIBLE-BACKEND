@@ -2,7 +2,6 @@ const Vendor = require("../models/vendorModel");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// Signup vendor
 const signupVendor = async (req, res) => {
   try {
     const {
@@ -27,10 +26,14 @@ const signupVendor = async (req, res) => {
       status,
       password,
       confirmPassword,
+      role: "vendor",  
     });
 
     await vendor.save();
-    res.status(201).json({ message: "Vendor registered successfully", vendor });
+    const token = jwt.sign({ userId: vendor._id, role: vendor.role }, process.env.JWT_SECRET, {
+      expiresIn: "2d",
+    });
+    res.status(201).json({ message: "Vendor registered successfully",token, vendor });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

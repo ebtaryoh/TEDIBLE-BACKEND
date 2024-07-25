@@ -7,7 +7,6 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-// User registration
 const registerUser = async (req, res, next) => {
   const { name, username, email, phone, password } = req.body;
   if (!name || !username || !email || !phone || !password) {
@@ -19,9 +18,13 @@ const registerUser = async (req, res, next) => {
   try {
     const user = await User.create({ ...req.body, password: hashedPassword });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "2d",
-    });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "2d",
+      }
+    );
 
     const options = {
       email: user.email,
@@ -47,7 +50,6 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-// User login
 const loginUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -79,7 +81,7 @@ const loginUser = async (req, res, next) => {
         username: user.username,
         email: user.email,
         phone: user.phone,
-        avatar:user.avatar
+        avatar: user.avatar,
       },
       token,
     });
@@ -88,7 +90,6 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-// User deletion
 const deleteUser = async (req, res, next) => {
   const { userId } = req.params;
   try {
@@ -102,7 +103,6 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-// Forgot password
 const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
 
@@ -143,7 +143,6 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
-// Reset password
 const resetPassword = async (req, res, next) => {
   const { token } = req.params;
   const { password } = req.body;
@@ -179,7 +178,6 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
-// Upload avatar
 const uploadAvatar = async (req, res) => {
   try {
     const userId = req.body.userId;
@@ -190,7 +188,6 @@ const uploadAvatar = async (req, res) => {
 
     const avatarUrl = req.file.path; // Cloudinary URL
 
-    // Update the user's avatar in the database
     await User.updateAvatar(userId, avatarUrl);
 
     res.json({ message: "Avatar uploaded successfully!", avatarUrl });
@@ -199,7 +196,6 @@ const uploadAvatar = async (req, res) => {
   }
 };
 
-// Get avatar
 const getAvatar = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
@@ -212,7 +208,6 @@ const getAvatar = async (req, res) => {
   }
 };
 
-// Update avatar
 const updateAvatar = async (req, res) => {
   try {
     const userId = req.body.userId;
@@ -223,7 +218,6 @@ const updateAvatar = async (req, res) => {
 
     const avatarUrl = req.file.path; // Cloudinary URL
 
-    // Update the user's avatar in the database
     await User.updateAvatar(userId, avatarUrl);
 
     res.json({ message: "Avatar updated successfully!", avatarUrl });
@@ -232,7 +226,6 @@ const updateAvatar = async (req, res) => {
   }
 };
 
-// Delete avatar
 const deleteAvatar = async (req, res) => {
   try {
     const userId = req.body.userId;

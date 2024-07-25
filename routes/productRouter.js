@@ -13,13 +13,13 @@ const methodNotAllowed = require("../utils/methodNotAllowed");
 router
   .route("/")
   .get(getProducts)
-  .post(upload.single("itemImage"), auth, createProduct)
+  .post(auth, upload.single("itemImage"), createProduct)
   .all(methodNotAllowed);
 
 router
   .route("/:id")
-  .put(upload.single("itemImage"), updateProduct)
-  .delete(deleteProduct)
+  .put(auth, upload.single("itemImage"), updateProduct)
+  .delete(auth, deleteProduct)
   .all(methodNotAllowed);
 
 module.exports = router;
