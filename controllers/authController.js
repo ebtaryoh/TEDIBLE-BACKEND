@@ -18,13 +18,9 @@ const registerUser = async (req, res, next) => {
   try {
     const user = await User.create({ ...req.body, password: hashedPassword });
 
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "2d",
-      }
-    );
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "2d",
+    });
 
     const options = {
       email: user.email,
@@ -70,11 +66,9 @@ const loginUser = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "2d" }
-    );
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "2d",
+    });
 
     res.status(200).json({
       message: "Login successful!",
@@ -138,7 +132,6 @@ const forgotPassword = async (req, res, next) => {
       subject: "Reset Password",
       text: `You requested a password reset. Click the following link to reset your password: ${resetUrl}`,
     };
-
     await sendMail(options);
 
     res.status(200).json({ message: "Password reset link sent to your email" });
