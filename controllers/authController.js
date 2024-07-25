@@ -131,7 +131,8 @@ const forgotPassword = async (req, res, next) => {
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
-    const resetUrl = `${process.env.CLIENT_BASE_URL}/reset-password/${resetToken}`;
+    // const resetUrl = `${process.env.CLIENT_BASE_URL}/reset-password/${resetToken}`;
+    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
     const options = {
       email: user.email,
       subject: "Reset Password",
