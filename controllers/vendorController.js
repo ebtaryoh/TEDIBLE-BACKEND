@@ -26,14 +26,13 @@ const signupVendor = async (req, res) => {
       status,
       password,
       confirmPassword,
-      role: "vendor",  
     });
 
     await vendor.save();
-    const token = jwt.sign({ userId: vendor._id, role: vendor.role }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: vendor._id }, process.env.JWT_SECRET, {
       expiresIn: "2d",
     });
-    res.status(201).json({ message: "Vendor registered successfully",token, vendor });
+    res.status(201).json({ message: "Vendor registered successfully", token, vendor });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

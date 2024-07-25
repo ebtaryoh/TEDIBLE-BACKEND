@@ -10,7 +10,7 @@ const createProduct = async (req, res) => {
       category,
       subCategory,
       tags,
-      vendor,
+      vendor, // Use vendor directly from the request body
     } = req.body;
 
     // Ensure req.file exists to avoid errors
@@ -25,13 +25,7 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ error: "Required fields are missing" });
     }
 
-    // Check user role
-    if (req.user.role !== "vendor") {
-      return res.status(401).json({
-        message: `User ${req.user.id} is not authorized to create products`,
-      });
-    }
-
+    // Create product
     const product = new Product({
       itemName,
       itemImage,
@@ -39,8 +33,8 @@ const createProduct = async (req, res) => {
       promotionalOffer,
       category,
       subCategory,
-      tags: tags.split(","), 
-      vendor: req.user.userId,
+      tags: tags.split(","),
+      vendor, // Use vendor directly
     });
 
     await product.save();

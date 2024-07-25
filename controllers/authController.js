@@ -8,13 +8,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const registerUser = async (req, res, next) => {
-  const { name, username, email, phone, password, role = "user" } = req.body;
+  const { name, username, email, phone, password } = req.body;
   if (!name || !username || !email || !phone || !password) {
     return res.status(400).json({ message: "All fields are required" });
-  }
-
-  if (!["user", "vendor"].includes(role)) {
-    return res.status(400).json({ message: "Invalid role value" });
   }
 
   const salt = await bcryptjs.genSalt(10);
@@ -23,7 +19,7 @@ const registerUser = async (req, res, next) => {
     const user = await User.create({ ...req.body, password: hashedPassword });
 
     const token = jwt.sign(
-      { userId: user._id, role: user.role },
+      { userId: user._id },
       process.env.JWT_SECRET,
       {
         expiresIn: "2d",
@@ -47,7 +43,6 @@ const registerUser = async (req, res, next) => {
         email: user.email,
         username: user.username,
         phone: user.phone,
-        role: user.role,
         avatar: user.avatar,
       },
     });
@@ -76,7 +71,7 @@ const loginUser = async (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { userId: user._id, role: user.role },
+      { userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "2d" }
     );
@@ -90,7 +85,6 @@ const loginUser = async (req, res, next) => {
         email: user.email,
         phone: user.phone,
         avatar: user.avatar,
-        role: user.role,
       },
       token,
     });

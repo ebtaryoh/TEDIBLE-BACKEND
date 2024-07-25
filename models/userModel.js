@@ -14,12 +14,6 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please provide an email address"],
       match: [/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "Invalid email address"],
     },
-    role: {
-      type: String,
-      enum: ["user", "vendor"],
-      required: true,
-      default: "user",
-    },
     phone: {
       type: String,
       required: [true, "Please provide a phone number"],
