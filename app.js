@@ -12,6 +12,7 @@ const ratingRouter = require("./routes/ratingRouter");
 const contactUsRouter = require("./routes/contactUsRouter");
 const vendorRouter = require("./routes/vendorRouter");
 const productRouter = require("./routes/productRouter");
+const webhookRouter = require("./routes/webhookRouter");
 
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
@@ -28,6 +29,7 @@ app.use("/api/rating", ratingRouter);
 app.use("/api/contact-us", contactUsRouter);
 app.use("/api/vendor", vendorRouter);
 app.use("/api/product", productRouter);
+app.use("/api/webhook", webhookRouter);
 
 app.use(errorHandler);
 app.use(methodNotAllowed);
