@@ -33,7 +33,7 @@ const registerUser = async (req, res, next) => {
     const options = {
       email: user.email,
       subject: "Welcome to TEDIBLE",
-      text: `Hi ${name}, Your registration is successful! Thank you for choosing us. We hope you enjoy our services.`,
+      text: `Hi ${firstName}, Your registration is successful! Thank you for choosing us. We hope you enjoy our services.`,
     };
 
     await sendMail(options);
