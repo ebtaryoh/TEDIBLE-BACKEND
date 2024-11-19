@@ -108,6 +108,9 @@ const initializePayment = async (req, res) => {
     const data = {
       email: email,
       amount: cart.totalAmount * 100,
+      metadata: {
+        userId: userId,
+      },
     };
 
     const headers = {

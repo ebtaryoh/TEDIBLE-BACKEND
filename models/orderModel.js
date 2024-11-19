@@ -28,6 +28,9 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    paymentReference: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

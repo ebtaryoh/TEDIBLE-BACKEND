@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 
-const secret = "your_secret_key"; // Replace with your actual Paystack secret key
+const secret = "process.env.JWT_SECRET"; // Replace with your actual Paystack secret key
 const payload = JSON.stringify({
   event: "charge.success",
   data: {

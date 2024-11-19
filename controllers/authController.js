@@ -8,16 +8,24 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const registerUser = async (req, res, next) => {
-  const { name, username, email, phone, password } = req.body;
-  if (!name || !username || !email || !phone || !password) {
+  const { firstName, lastName, email, phone, password } = req.body;
+  if (!firstName || !lastName || !email || !phone || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+  }
 
-  const salt = await bcryptjs.genSalt(10);
-  const hashedPassword = await bcryptjs.hash(password, salt);
   try {
-    const user = await User.create({ ...req.body, password: hashedPassword });
-
+    const hashedPassword = await bcryptjs.hash(password, 10);
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      phone,
+      password: hashedPassword,
+    });
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "2d",
     });
@@ -35,9 +43,9 @@ const registerUser = async (req, res, next) => {
       token,
       user: {
         id: user._id,
-        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
-        username: user.username,
         phone: user.phone,
         avatar: user.avatar,
       },
@@ -48,22 +56,20 @@ const registerUser = async (req, res, next) => {
 };
 
 const loginUser = async (req, res, next) => {
-  try {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      return res
-        .status(400)
-        .json({ message: "Username and password are required" });
-    }
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
 
-    const user = await User.findOne({ username });
+  try {
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const isPasswordMatch = await bcryptjs.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -72,15 +78,15 @@ const loginUser = async (req, res, next) => {
 
     res.status(200).json({
       message: "Login successful!",
+      token,
       user: {
         id: user._id,
-        name: user.name,
-        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
         phone: user.phone,
         avatar: user.avatar,
       },
-      token,
     });
   } catch (error) {
     next(error);
@@ -183,8 +189,7 @@ const uploadAvatar = async (req, res) => {
       return res.status(400).json({ error: "Please upload an image file." });
     }
 
-    const avatarUrl = req.file.path; // Cloudinary URL
-
+    const avatarUrl = req.file.path; 
     await User.updateAvatar(userId, avatarUrl);
 
     res.json({ message: "Avatar uploaded successfully!", avatarUrl });
@@ -213,7 +218,7 @@ const updateAvatar = async (req, res) => {
       return res.status(400).json({ error: "Please upload an image file." });
     }
 
-    const avatarUrl = req.file.path; // Cloudinary URL
+    const avatarUrl = req.file.path; 
 
     await User.updateAvatar(userId, avatarUrl);
 
