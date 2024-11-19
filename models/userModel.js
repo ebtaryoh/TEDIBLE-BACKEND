@@ -41,4 +41,4 @@ userSchema.statics.updateAvatar = async function (userId, avatarUrl) {
   await this.findByIdAndUpdate(userId, { avatar: avatarUrl });
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Usermodel", userSchema);
