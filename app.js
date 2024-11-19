@@ -23,6 +23,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
+console.log("Auth routes loaded");
+
 app.use("/api/order", orderRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/rating", ratingRouter);
