@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { sendMail } = require("../utils/sendMail");
+// const { sendMail } = require("../utils/sendMail");
 const crypto = require("crypto");
 const dotenv = require("dotenv");
 
@@ -30,13 +30,13 @@ const registerUser = async (req, res, next) => {
       expiresIn: "2d",
     });
 
-    const options = {
-      email: user.email,
-      subject: "Welcome to TEDIBLE",
-      text: `Hi ${firstName}, Your registration is successful! Thank you for choosing us. We hope you enjoy our services.`,
-    };
+    // const options = {
+    //   email: user.email,
+    //   subject: "Welcome to TEDIBLE",
+    //   text: `Hi ${firstName}, Your registration is successful! Thank you for choosing us. We hope you enjoy our services.`,
+    // };
 
-    await sendMail(options);
+    // await sendMail(options);
 
     res.status(201).json({
       message: "User registered successfully",
@@ -132,13 +132,13 @@ const forgotPassword = async (req, res, next) => {
     await user.save();
 
     // const resetUrl = `${process.env.CLIENT_BASE_URL}/reset-password/${resetToken}`;
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
-    const options = {
-      email: user.email,
-      subject: "Reset Password",
-      text: `You requested a password reset. Click the following link to reset your password: ${resetUrl}`,
-    };
-    await sendMail(options);
+    // const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    // const options = {
+    //   email: user.email,
+    //   subject: "Reset Password",
+    //   text: `You requested a password reset. Click the following link to reset your password: ${resetUrl}`,
+    // };
+    // await sendMail(options);
 
     res.status(200).json({ message: "Password reset link sent to your email" });
   } catch (error) {
