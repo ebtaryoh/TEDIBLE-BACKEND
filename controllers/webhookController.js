@@ -4,18 +4,19 @@ const Cart = require("../models/cartModel");
 
 const handleWebhook = async (req, res) => {
   const secret = process.env.PAYSTACK_SECRET_KEY;
-  const hash = crypto.createHmac('sha512', secret).update(JSON.stringify(req.body)).digest('hex');
-  
-  if (hash !== req.headers['x-paystack-signature']) {
+
+  // Validate Paystack signature
+  const hash = crypto.createHmac("sha512", secret).update(JSON.stringify(req.body)).digest("hex");
+  if (hash !== req.headers["x-paystack-signature"]) {
     return res.status(401).json({ message: "Unauthorized request" });
   }
 
   const event = req.body;
 
   switch (event.event) {
-    case 'charge.success':
+    case "charge.success":
       const paymentReference = event.data.reference;
-      const userId = event.data.metadata.userId; // Ensure to pass userId in the metadata when initializing payment
+      const userId = event.data.metadata.userId; // Ensure userId is passed in metadata
 
       try {
         const cart = await Cart.findOne({ user: userId }).populate("items.product");
@@ -35,8 +36,9 @@ const handleWebhook = async (req, res) => {
           totalAmount: cart.totalAmount,
           status: "completed",
         });
-        await order.save();
 
+        // Save order and clear cart
+        await order.save();
         await Cart.findByIdAndRemove(cart._id);
 
         res.status(200).json({ message: "Order placed successfully", order });
@@ -44,7 +46,7 @@ const handleWebhook = async (req, res) => {
         res.status(500).json({ message: "Error placing order", error: error.message });
       }
       break;
-    
+
     default:
       res.status(200).json({ message: "Event received" });
       break;
