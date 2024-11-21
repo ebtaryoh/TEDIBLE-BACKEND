@@ -31,7 +31,7 @@ app.use("/api/rating", ratingRouter);
 app.use("/api/contact-us", contactUsRouter);
 app.use("/api/vendor", vendorRouter);
 app.use("/api/product", productRouter);
-app.use("/api/webhook", webhookRouter);
+// app.use("/api/webhook", webhookRouter);
 
 app.use(errorHandler);
 app.use(methodNotAllowed);
