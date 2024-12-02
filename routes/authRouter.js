@@ -10,12 +10,16 @@ const {
   deleteUser,
   forgotPassword,
   resetPassword,
+  getUser,
+  getAllUsers,
 } = require("../controllers/authController");
 const router = express.Router();
 
 // User authentication routes
 router.route("/register").post(registerUser).all(methodNotAllowed);
 router.route("/login").post(loginUser).all(methodNotAllowed);
+router.route("/:userId").get(auth, getUser).all(methodNotAllowed);
+router.route("/:userId").get(auth, getAllUsers).all(methodNotAllowed);
 router.route("/delete/:userId").delete(auth, deleteUser).all(methodNotAllowed);
 router.route("/forgot-password").post(forgotPassword).all(methodNotAllowed);
 router.route("/reset-password/:id").post(resetPassword).all(methodNotAllowed);
